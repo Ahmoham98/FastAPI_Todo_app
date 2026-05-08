@@ -38,10 +38,11 @@ def retrieve_name_detail(name_id: int):
 
 # UPDATES USER WITH GIVEN USER_ID
 @app.put("/names/{name_id}")
-def update_name(name_id: int):
-    for name in names_list:
-        if name['id'] == name_id:
-            return name # THIS IS A RNADOM COMMENT
+def update_name(name_id: int, name: str):
+    for item in names_list:
+        if item['id'] == name_id:
+            item['name'] = name
+            return item
     return {'detail': 'staus_code: 404, Object not found!'}
 
 # CHECKING IF APPLICATION IS WORKING
