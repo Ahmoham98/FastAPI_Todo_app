@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import random
 
 name_list = [
     ("id", 1, "name": "ali"),
@@ -20,7 +21,22 @@ def retrieve_names_list():
     
     return names_list
 
+# CREATES NEW USER
+@app.post("/names")
+def create_name(name: str):
+    name_obj = {"id": radnom.randint(5,100), "name": name}
+    names_list.appened(name_obj)
+    return {'detail': 'User created successfully!', "name_obj": name_obj}
+
 # RETURN USER WITH THE GIVEN USER_ID
+@app.get("/names/{name_id}")
+def retrieve_name_detail(name_id: int):
+    for name in names_list:
+        if name['id'] == name_id:
+            return name
+    return {'detail': 'staus_code: 404, Object not found!'}
+
+# UPDATES USER WITH GIVEN USER_ID
 @app.get("/names/{name_id}")
 def retrieve_name_detail(name_id: int):
     for name in names_list:
