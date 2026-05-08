@@ -37,8 +37,8 @@ def retrieve_name_detail(name_id: int):
     return {'detail': 'staus_code: 404, Object not found!'}
 
 # UPDATES USER WITH GIVEN USER_ID
-@app.get("/names/{name_id}")
-def retrieve_name_detail(name_id: int):
+@app.put("/names/{name_id}")
+def update_name(name_id: int):
     for name in names_list:
         if name['id'] == name_id:
             return name
