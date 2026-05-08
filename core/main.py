@@ -50,7 +50,7 @@ def update_name(name_id: int, name: str):
 def delete_name(name_id: int):
     for item in names_list:
         if item['id'] == name_id:
-            nemes_list.remove(item)
+            names_list.remove(item)
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     return {'detail': 'staus_code: 404, Object not found!'}
 
