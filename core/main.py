@@ -41,7 +41,7 @@ def retrieve_name_detail(name_id: int):
 def update_name(name_id: int):
     for name in names_list:
         if name['id'] == name_id:
-            return name
+            return name # THIS IS A RNADOM COMMENT
     return {'detail': 'staus_code: 404, Object not found!'}
 
 # CHECKING IF APPLICATION IS WORKING
