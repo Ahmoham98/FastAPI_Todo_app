@@ -45,6 +45,15 @@ def update_name(name_id: int, name: str):
             return item
     return {'detail': 'staus_code: 404, Object not found!'}
 
+# DELETS USER WITH GIVEN USER_ID
+@app.delete("/names/{name_id}")
+def delete_name(name_id: int):
+    for item in names_list:
+        if item['id'] == name_id:
+            nemes_list.remove(item)
+            return {'detail': 'status_code: 402, No Content for this value anymore'}
+    return {'detail': 'staus_code: 404, Object not found!'}
+
 # CHECKING IF APPLICATION IS WORKING
 @app.get("/")
 def root():
