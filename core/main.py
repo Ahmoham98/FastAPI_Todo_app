@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 import random
 
 names_list = [
@@ -19,7 +19,7 @@ app = FastAPI()
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names")
-def retrieve_names_list(q: str | None = None):
+def retrieve_names_list(q: str | None = Query(default=None, max_length=50)):
     if q:
         return [item for item in names_list if item['name'] == q]
     return names_list
