@@ -19,7 +19,26 @@ app = FastAPI()
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names")
-def retrieve_names_list(q: str | None = Query(default=None, max_length=50)):
+def retrieve_names_list(q: str | None = Query(
+                                            default=None,
+                                            alias='searh', 
+                                            title='search_filter', 
+                                            description='helps you make request to give you only users with provided name',
+                                            min_length=1,
+                                            max_length=50,
+                                            pattern=r"^(?=.{2,50}$)[A-Za-z\u0600-\u06FF]+(?:[\s\u200C][A-Za-z\u0600-\u06FF]+)*$",
+                                            example="ali",
+                                            )
+                        limit: int | None = Query(
+                                            default=None,
+                                            alias='items_number',
+                                            title='how many items? max=50',
+                                            description='How many items you want to receive per page?'
+                                            le=50,
+                                            ge=1,
+                                            example=20,
+                                            )
+):
     if q:
         return [item for item in names_list if item['name'] == q]
     return names_list
