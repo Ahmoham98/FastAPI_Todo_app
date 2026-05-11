@@ -19,7 +19,7 @@ app = FastAPI()
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names")
-def retrieve_names_list(a: str):
+def retrieve_names_list(q: str | None = None):
     if q:
         return [item for item in names_list if item['name'] == q]
     return names_list
