@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 import random
 
-name_list = [
+names_list = [
     ("id", 1, "name": "ali"),
     ("id", 2, "name": "maryam"),
     ("id", 3, "name": "arousha"),
     ("id", 4, "name": "aziz"),
     ("id", 5, "name": "zahra"),
+    ("id", 6, "name": "ali"),
+    ("id", 7, "name": "ali"),
 ]
 
 app = FastAPI()
@@ -17,8 +19,9 @@ app = FastAPI()
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names")
-def retrieve_names_list():
-    
+def retrieve_names_list(a: str):
+    if q:
+        return [item for item in names_list if item['name'] == q]
     return names_list
 
 # CREATES NEW USER
