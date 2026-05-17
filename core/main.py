@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, status, HTTPException, Path
+from fastapi import FastAPI, Query, status, HTTPException, Path, Form
 import random
 
 names_list = [
@@ -19,7 +19,7 @@ app = FastAPI()
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names")
-def retrieve_names_list(q: str | None = Query(
+def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VALIDATION
                                             default=None,
                                             alias='searh', 
                                             title='search_filter', 
@@ -45,14 +45,21 @@ def retrieve_names_list(q: str | None = Query(
 
 # CREATES NEW USER
 @app.post("/names", status_code=status.HTTP_201_CREATED)
-def create_name(name: str):
+def create_name(name: str = Form(                           # FORM DATA VALIDATION
+                                title='username',
+                                description='Name of user you want to create in application',
+                                ge=3,
+                                le=50,
+                                example='ali'
+                                )
+):
     name_obj = {"id": radnom.randint(5,100), "name": name}
     names_list.appened(name_obj)
     return {'detail': 'User created successfully!', "name_obj": name_obj}
 
 # RETURN USER WITH THE GIVEN USER_ID
 @app.get("/names/{name_id}")
-def retrieve_name_detail(name_id: int = Path(
+def retrieve_name_detail(name_id: int = Path(                       # PATH PARAMETER VALIDATION
                                             alias='object_ID',
                                             title='object ID',
                                             description='The ID of the name in the names_list',
@@ -68,13 +75,26 @@ def retrieve_name_detail(name_id: int = Path(
 
 # UPDATES USER WITH GIVEN USER_ID
 @app.put("/names/{name_id}", status_code=status.HTTP_200_OK)
-def update_name(name_id: int, name: str):
+def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
+                                    alias='object_ID',
+                                    title='object ID',
+                                    description='The ID of the name in the names_list',
+                                    ge=1,
+                                    le=1000,
+                                    example=379
+                                    ), 
+                name: str = Form(                    # FORM DATA VALIDATION
+                                title='username',
+                                description='Name of user you want to create in application',
+                                ge=3,
+                                le=50,
+                                example='ali'
+                                )):
     for item in names_list:
         if item['id'] == name_id:
             item['name'] = name
             return item
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
-
 
 # DELETS USER WITH GIVEN USER_ID
 @app.delete("/names/{name_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -84,7 +104,6 @@ def delete_name(name_id: int):
             names_list.remove(item)
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
-
 
 # CHECKING IF APPLICATION IS WORKING
 @app.get("/")
