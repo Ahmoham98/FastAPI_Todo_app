@@ -89,7 +89,8 @@ def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
                                 ge=3,
                                 le=50,
                                 example='ali'
-                                )):
+                                )
+):
     for item in names_list:
         if item['id'] == name_id:
             item['name'] = name
@@ -98,7 +99,15 @@ def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
 
 # DELETS USER WITH GIVEN USER_ID
 @app.delete("/names/{name_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_name(name_id: int):
+def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
+                                    alias='object_ID',
+                                    title='object ID',
+                                    description='The ID of the name in the names_list',
+                                    ge=1,
+                                    le=1000,
+                                    example=379
+                                    ),
+):
     for item in names_list:
         if item['id'] == name_id:
             names_list.remove(item)
