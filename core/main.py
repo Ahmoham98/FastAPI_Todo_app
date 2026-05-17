@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, status, HTTPException
+from fastapi import FastAPI, Query, status, HTTPException, Path
 import random
 
 names_list = [
@@ -52,7 +52,15 @@ def create_name(name: str):
 
 # RETURN USER WITH THE GIVEN USER_ID
 @app.get("/names/{name_id}")
-def retrieve_name_detail(name_id: int):
+def retrieve_name_detail(name_id: int = Path(
+                                            alias='object_ID',
+                                            title='object ID',
+                                            description='The ID of the name in the names_list',
+                                            ge=1,
+                                            le=1000,
+                                            example=379
+                                            )
+):
     for name in names_list:
         if name['id'] == name_id:
             return name
