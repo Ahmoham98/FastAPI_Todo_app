@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Query, status, HTTPException, Path, Form
+from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body
 import random
 
 names_list = [
@@ -113,6 +113,17 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
             names_list.remove(item)
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
+
+@app.get("/body")
+def get_body_example(name: str = Body(
+                                    title='request body',
+                                    description='Enter required body format for this API',
+                                    ge=1,
+                                    le=50,
+                                    embed=True
+                                    )
+):
+    return {'detail': 'body received successfully!'}
 
 # CHECKING IF APPLICATION IS WORKING
 @app.get("/")
