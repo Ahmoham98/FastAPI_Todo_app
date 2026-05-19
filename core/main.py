@@ -56,6 +56,7 @@ def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VA
     if q:
         return [item for item in names_list if item['name'] == q]
     return names_list
+
 # CREATES NEW USER
 @app.post("/names", status_code=status.HTTP_201_CREATED)
 def create_name(name: str = Form(                           # FORM DATA VALIDATION
@@ -69,6 +70,7 @@ def create_name(name: str = Form(                           # FORM DATA VALIDATI
     name_obj = {"id": random.randint(5,100), "name": name}
     names_list.append(name_obj)
     return {'detail': 'User created successfully!', "name_obj": name_obj}
+
 # RETURN USER WITH THE GIVEN USER_ID
 @app.get("/names/{name_id}")
 def retrieve_name_detail(name_id: int = Path(                       # PATH PARAMETER VALIDATION
@@ -84,6 +86,7 @@ def retrieve_name_detail(name_id: int = Path(                       # PATH PARAM
         if name['id'] == name_id:
             return name
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
+
 # UPDATES USER WITH GIVEN USER_ID
 @app.put("/names/{name_id}", status_code=status.HTTP_200_OK)
 def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
@@ -107,6 +110,7 @@ def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
             item['name'] = name
             return item
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
+
 # DELETS USER WITH GIVEN USER_ID
 @app.delete("/names/{name_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
@@ -123,6 +127,7 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
             names_list.remove(item)
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
+
 # HANDLES BODY USING BODY() SAME AS WHAT WE HAD FOR QUERY(), PATH(), FORM()
 @app.get("/body")
 def get_body_example(name: str = Body(
@@ -134,6 +139,7 @@ def get_body_example(name: str = Body(
                                     )
 ):
     return {'detail': 'body received successfully!'}
+
 # CHECKING IF APPLICATION IS WORKING
 @app.get("/")
 def root():
