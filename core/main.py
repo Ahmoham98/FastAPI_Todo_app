@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body
+from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body, UploadFile
+from typing import List
 import random
 
 names_list = [
@@ -114,6 +115,7 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
 
+# HANDLES BODY USING BODY() SAME AS WHAT WE HAD FOR QUERY(), PATH(), FORM()
 @app.get("/body")
 def get_body_example(name: str = Body(
                                     title='request body',
@@ -130,3 +132,17 @@ def get_body_example(name: str = Body(
 def root():
     return {'detail': 'Hello world!'}
 
+# HANDLE FILE ENDPOINT
+@app.post("/upload_file")
+def uplaod_file_handler(file: UploadFile = File(...)):
+    content = await file.read()
+    print(file.__dict__)
+    return {"filename: ", file.filename, "Content-Type: ", file.content_type, "file-size: ", len(content)}
+
+# HANDLE MULTIPLE FILE UPLOAD
+@app.post("/upload_files")
+def multiple_file_upload_handler(files: List[UploadFile]):
+    return {
+        {"filename: ", file.filename, "Content-Type: ", file.content_type, }
+        for file in files
+    }
