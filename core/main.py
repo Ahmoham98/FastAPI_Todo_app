@@ -1,16 +1,18 @@
-from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body, UploadFile
+from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body, UploadFile, File
 from typing import List
 import random
+from contextlib import asynccontextmanager
+from fastapi_swagger import patch_fastapi
 
 # ---- EXAMPLE DATABASE FOR NOW TILL DATABASE IMPLEMENTATION ----
 names_list = [
-    ("id", 1, "name": "ali"),
-    ("id", 2, "name": "maryam"),
-    ("id", 3, "name": "arousha"),
-    ("id", 4, "name": "aziz"),
-    ("id", 5, "name": "zahra"),
-    ("id", 6, "name": "ali"),
-    ("id", 7, "name": "ali"),
+    {"id": 2, "name": "maryam"},
+    {"id": 1, "name": "ali"},
+    {"id": 3, "name": "arousha"},
+    {"id": 4, "name": "aziz"},
+    {"id": 5, "name": "zahra"},
+    {"id": 6, "name": "ali"},
+    {"id": 7, "name": "ali"},
 ]
 
 # ---- DEFINING LIFESPAN FOR APPLICATION ----
@@ -21,6 +23,7 @@ async def lifespan(app: FastAPI):
     print("Application shutdown")
 
 app = FastAPI(lifespan=lifespan)
+patch_fastapi(app)
 
 # ---- RESTFULL APIS GET/POST/PUT/PATCH/DELETE ----
 # ---- + QUERY, PATH, FORM VALIDATION ---- (PYDANTINC FOR BODY VALIDATION IS GOING TO BE USED)
@@ -35,19 +38,19 @@ def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VA
                                             alias='searh', 
                                             title='search_filter', 
                                             description='helps you make request to give you only users with provided name',
-                                            min_length=1,
+                                            min_length=2,
                                             max_length=50,
-                                            pattern=r"^(?=.{2,50}$)[A-Za-z\u0600-\u06FF]+(?:[\s\u200C][A-Za-z\u0600-\u06FF]+)*$",
-                                            example="ali",
-                                            )
+                                            pattern=r"^[A-Za-z\u0600-\u06FF]+(?:[\s\u200C][A-Za-z\u0600-\u06FF]+)*$",
+                                            examples="ali",
+                                            ),
                         limit: int | None = Query(
                                             default=None,
                                             alias='items_number',
                                             title='how many items? max=50',
-                                            description='How many items you want to receive per page?'
+                                            description='How many items you want to receive per page?',
                                             le=50,
                                             ge=1,
-                                            example=20,
+                                            examples=20,
                                             )
 ):
     if q:
@@ -60,11 +63,11 @@ def create_name(name: str = Form(                           # FORM DATA VALIDATI
                                 description='Name of user you want to create in application',
                                 ge=3,
                                 le=50,
-                                example='ali'
+                                examples='ali'
                                 )
 ):
-    name_obj = {"id": radnom.randint(5,100), "name": name}
-    names_list.appened(name_obj)
+    name_obj = {"id": random.randint(5,100), "name": name}
+    names_list.append(name_obj)
     return {'detail': 'User created successfully!', "name_obj": name_obj}
 # RETURN USER WITH THE GIVEN USER_ID
 @app.get("/names/{name_id}")
@@ -74,7 +77,7 @@ def retrieve_name_detail(name_id: int = Path(                       # PATH PARAM
                                             description='The ID of the name in the names_list',
                                             ge=1,
                                             le=1000,
-                                            example=379
+                                            examples=379
                                             )
 ):
     for name in names_list:
@@ -89,14 +92,14 @@ def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
                                     description='The ID of the name in the names_list',
                                     ge=1,
                                     le=1000,
-                                    example=379
+                                    examples=379
                                     ), 
                 name: str = Form(                    # FORM DATA VALIDATION
                                 title='username',
                                 description='Name of user you want to create in application',
                                 ge=3,
                                 le=50,
-                                example='ali'
+                                examples='ali'
                                 )
 ):
     for item in names_list:
@@ -112,7 +115,7 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
                                     description='The ID of the name in the names_list',
                                     ge=1,
                                     le=1000,
-                                    example=379
+                                    examples=379
                                     ),
 ):
     for item in names_list:
@@ -139,15 +142,19 @@ def root():
 # ---- UPLOAD FILE HANDLING ---
 # HANDLE FILE ENDPOINT
 @app.post("/upload_file")
-def uplaod_file_handler(file: UploadFile = File(...)):
+async def uplaod_file_handler(file: UploadFile = File(...)):
     content = await file.read()
     print(file.__dict__)
-    return {"filename: ", file.filename, "Content-Type: ", file.content_type, "file-size: ", len(content)}
+    return {
+        "filename": file.filename, 
+        "Content-Type": file.content_type, 
+        "file-size": len(content)
+    }
 # HANDLE MULTIPLE FILE UPLOAD
 @app.post("/upload_files")
-def multiple_file_upload_handler(files: List[UploadFile]):
+def multiple_file_upload_handler(files: List[UploadFile] = File(...)):
     return {
-        {"filename: ", file.filename, "Content-Type: ", file.content_type, }
+        {"filename": file.filename, "Content-Type": file.content_type}
         for file in files
     }
 
