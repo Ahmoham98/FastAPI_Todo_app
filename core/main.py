@@ -153,10 +153,10 @@ async def uplaod_file_handler(file: UploadFile = File(...)):
 # HANDLE MULTIPLE FILE UPLOAD
 @app.post("/upload_files")
 def multiple_file_upload_handler(files: List[UploadFile] = File(...)):
-    return {
+    return [
         {"filename": file.filename, "Content-Type": file.content_type}
         for file in files
-    }
+    ]
 
 
 
