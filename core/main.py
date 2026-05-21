@@ -3,6 +3,8 @@ from typing import List
 import random
 from contextlib import asynccontextmanager
 from fastapi_swagger import patch_fastapi
+from schemas import PersonCreateSchema, PersonResponseSchema, PersonUpdateSchema
+from typing import List
 
 # ---- EXAMPLE DATABASE FOR NOW TILL DATABASE IMPLEMENTATION ----
 names_list = [
@@ -32,7 +34,7 @@ patch_fastapi(app)
 # /NAMES/{NAME_ID} : PUT/PATCH/DELETE WITH THE GIVEN NAME ID
 
 # RETURNS THE WHOLE USER LIST
-@app.get("/names")
+@app.get("/names", response_model=List[PersonResponseSchema])
 def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VALIDATION
                                             default=None,
                                             alias='searh', 
@@ -58,23 +60,15 @@ def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VA
     return names_list
 
 # CREATES NEW USER
-@app.post("/names", status_code=status.HTTP_201_CREATED)
-def create_name(name: str = Form(                           # FORM DATA VALIDATION
-                                title='username',
-                                description='Name of user you want to create in application',
-                                ge=3,
-                                le=50,
-                                examples='ali'
-                                )
-):
-    name_obj = {"id": random.randint(5,100), "name": name}
+@app.post("/names", status_code=status.HTTP_201_CREATED, response_model=PersonResponseSchema)
+def create_name(person: PersonCreateSchema):
+    name_obj = {"id": random.randint(5,100), "name": person.name}
     names_list.append(name_obj)
     return {'detail': 'User created successfully!', "name_obj": name_obj}
 
 # RETURN USER WITH THE GIVEN USER_ID
-@app.get("/names/{name_id}")
+@app.get("/names/{name_id}", response_model=PersonResponseSchema)
 def retrieve_name_detail(name_id: int = Path(                       # PATH PARAMETER VALIDATION
-                                            alias='object_ID',
                                             title='object ID',
                                             description='The ID of the name in the names_list',
                                             ge=1,
@@ -88,26 +82,19 @@ def retrieve_name_detail(name_id: int = Path(                       # PATH PARAM
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
 
 # UPDATES USER WITH GIVEN USER_ID
-@app.put("/names/{name_id}", status_code=status.HTTP_200_OK)
-def update_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
-                                    alias='object_ID',
-                                    title='object ID',
-                                    description='The ID of the name in the names_list',
-                                    ge=1,
-                                    le=1000,
-                                    examples=379
-                                    ), 
-                name: str = Form(                    # FORM DATA VALIDATION
-                                title='username',
-                                description='Name of user you want to create in application',
-                                ge=3,
-                                le=50,
-                                examples='ali'
-                                )
+@app.put("/names/{name_id}", status_code=status.HTTP_200_OK, response_model=PersonResponseSchema)
+def update_name(person: PersonUpdateSchema, name_id: int = Path(                  # PATH PARAMETER VALIDATION
+                                                            alias='object_ID',
+                                                            title='object ID',
+                                                            description='The ID of the name in the names_list',
+                                                            ge=1,
+                                                            le=1000,
+                                                            examples=379
+                                                        )
 ):
     for item in names_list:
         if item['id'] == name_id:
-            item['name'] = name
+            item['name'] = person.name
             return item
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
 
@@ -127,6 +114,20 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
             names_list.remove(item)
             return {'detail': 'status_code: 402, No Content for this value anymore'}
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, details='Object not found!')
+
+# HANDLES FORM USING FORM()
+@app.post("/from", status_code=status.HTTP_201_CREATED)
+def create_name(name: str = Form(                           # FORM DATA VALIDATION
+                                title='username',
+                                description='Name of user you want to create in application',
+                                ge=3,
+                                le=50,
+                                examples='ali'
+                                )
+):
+    name_obj = {"id": random.randint(5,100), "name": name}
+    names_list.append(name_obj)
+    return {'detail': 'User created successfully!', "name_obj": name_obj}
 
 # HANDLES BODY USING BODY() SAME AS WHAT WE HAD FOR QUERY(), PATH(), FORM()
 @app.get("/body")
