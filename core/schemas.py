@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator
 
 class BasePersonSchema(BaseModel):
-    name: str # = Field(..., max_length=50)
+    name: str
 
     @field_validator("name")
     def validate_name(cls, value):
@@ -21,7 +21,7 @@ class PersonResponseSchema(BasePersonSchema):
 class PersonUpdateSchema(BasePersonSchema):
     pass
 
-# ROOT VALIDTOR EXAMPLE
+# MODEL VALIDTOR EXAMPLE
 class Boost(BaseModel):
     start: int 
     end: int
@@ -35,3 +35,43 @@ class Boost(BaseModel):
 # CUSTOM VALIDATOR EXAMPLE
 class User(BaseModel):
     email: EmailStr
+
+
+# ---- MODEL_VALIDATE FUNCTION ----
+# from pydantic import BaseModel
+
+#class Person(BaseModel):
+#    first_name: str
+#    last_name: str
+#    age: int
+#
+## WHAT IS GOING TO BE CREATED IS
+#data = {
+#   "first_name": "ali",
+#   "last_name": "big",
+#   "age": 30
+#}
+#P = Person.model_validate(data)
+# --------------------------------------
+
+
+# ---- MODEL_VALIDATE_JSON FUNCTION ----
+# USEFULL FOR PARSING STRINGS WHICH ARE IN JSON FORMAT
+# from pydantic import BaseModel
+
+#class Person(BaseModel):
+#    first_name: str
+#    last_name: str
+#    age: int
+#
+#data_json = '''
+#{
+#   "first_name": "ali",
+#   "last_name": "big",
+#   "age": 30
+#}
+#'''
+#person = Person.model_validate_json(data_json)
+#
+#
+#
