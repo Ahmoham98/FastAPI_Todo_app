@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator
+from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator, filed_serializer, model_serializer
 
 class BasePersonSchema(BaseModel):
     name: str
@@ -36,8 +36,35 @@ class Boost(BaseModel):
 class User(BaseModel):
     email: EmailStr
 
+# FIELD SERIALIZER EXAMPLE
+class FieldSerialized(BaseModel):
+    number: float
 
-# ---- MODEL_VALIDATE FUNCTION ----
+    # IF WE HAVE 1/3 FOR NUMBER, THAT CAN BE 0.333333333333333333 AND WE NEED TO ROUND THAT NUMBER
+    @filed_serializer("number")
+    def serialize_float(self, value):
+        return round(value, 2)
+
+# MODEL SERIALIZER EXAMPLE
+class ModelSerialized(BaseModel):
+    id: int
+    name: str
+    is_active: bool
+
+    @model_serializer
+    def custom_serializer(self) -> dict:
+        return {
+            "user_id": self.id,
+            "full_name": self.name.upper(),
+            "status": "active" if self.is_active else "inactive",
+        }
+
+
+
+
+
+
+# ---- MODEL_VALIDATE() FUNCTION ----
 # from pydantic import BaseModel
 
 #class Person(BaseModel):
@@ -55,7 +82,7 @@ class User(BaseModel):
 # --------------------------------------
 
 
-# ---- MODEL_VALIDATE_JSON FUNCTION ----
+# ---- MODEL_VALIDATE_JSON() FUNCTION ----
 # USEFULL FOR PARSING STRINGS WHICH ARE IN JSON FORMAT
 # from pydantic import BaseModel
 
@@ -72,6 +99,35 @@ class User(BaseModel):
 #}
 #'''
 #person = Person.model_validate_json(data_json)
+# --------------------------------------
+
+# ---- SERIALIZATION AND DESERIALIZATION ----
+# -> 1. model_dump()
+# -> 2. model_dump_json()
 #
+#from pydantic import BaseModel, EmailStr
 #
+#class User(BaseModel):
+#    name: str
+#    email: EmailStr
+#    account_id: int
 #
+#user = User(name="Ahmoham", email="electricallover45@gmail.com", account_id="123")
+#
+#user.model_dump()
+## OUTPUT -> {name='Ahmoham', email='electricallover45@gmail.com', account_id='123'}
+#
+#user.model_dump_json()
+## OUTPUT -> "{name='Ahmoham', email='electricallover45@gmail.com', account_id='123'}"
+#
+#user.model_dump_json()
+#''' OUTPUT ->  "
+#{
+#  name='Ahmoham', 
+#  email='electricallover45@gmail.com', 
+#  account_id='123'
+#}"
+#'''
+
+
+
