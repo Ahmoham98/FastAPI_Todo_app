@@ -21,6 +21,24 @@ class PersonResponseSchema(BasePersonSchema):
 class PersonUpdateSchema(BasePersonSchema):
     pass
 
+# ---- FOR DOCUMENTATION USING MODEL_JSON_SCHEMA ----
+class Example(BaseModel):
+    name: str = Field(default="John Doe", description="The user's name", example="Nutrialgo", min_length=3, max_length=25)
+    #name : str = Field(..., default="John Doe") # ... FOR WHEN YOU WANT TO MAKE A FIELD REQUIRED
+print(Example.model_json_schema())
+# INCLUDES METADATA IN THE SCHEMA
+{
+    "title": "Example",
+    "properties": {
+        "name": {
+            "title": "Name",
+            "default": "John Doe",
+            "description": "the user's name",
+            "examples": ["Alice"]
+        }
+    }
+}
+
 # MODEL VALIDTOR EXAMPLE
 class Boost(BaseModel):
     start: int 
@@ -58,8 +76,6 @@ class ModelSerialized(BaseModel):
             "full_name": self.name.upper(),
             "status": "active" if self.is_active else "inactive",
         }
-
-
 
 
 
@@ -120,7 +136,7 @@ class ModelSerialized(BaseModel):
 #user.model_dump_json()
 ## OUTPUT -> "{name='Ahmoham', email='electricallover45@gmail.com', account_id='123'}"
 #
-#user.model_dump_json()
+#user.model_dump_json(indent=2)
 #''' OUTPUT ->  "
 #{
 #  name='Ahmoham', 
@@ -128,6 +144,5 @@ class ModelSerialized(BaseModel):
 #  account_id='123'
 #}"
 #'''
-
 
 
