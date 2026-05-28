@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator, filed_serializer, model_serializer
 
 class BasePersonSchema(BaseModel):
-    name: str
+    name: str = Field(..., description="Enter person's name")
 
     @field_validator("name")
     def validate_name(cls, value):
@@ -10,13 +10,16 @@ class BasePersonSchema(BaseModel):
         if not value.isalpha():
             raise ValueError("Name must contain only alphabetic characters")
         return value
+    @filed_serializer("name")
+    def serialize_name(value):
+        return value.title() # ali to Ali
     
 
 class PersonCreateSchema(BasePersonSchema):
     pass
 
 class PersonResponseSchema(BasePersonSchema):
-    id: int
+    id: int = Field(..., description="Unique user identifier")
 
 class PersonUpdateSchema(BasePersonSchema):
     pass
