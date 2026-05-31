@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator, filed_serializer, model_serializer
+from pydantic import BaseModel, Field, EmailStr, model_validator, field_validator, field_serializer, model_serializer
 
 class BasePersonSchema(BaseModel):
     name: str = Field(..., description="Enter person's name")
@@ -10,7 +10,7 @@ class BasePersonSchema(BaseModel):
         if not value.isalpha():
             raise ValueError("Name must contain only alphabetic characters")
         return value
-    @filed_serializer("name")
+    @field_serializer("name")
     def serialize_name(value):
         return value.title() # ali to Ali
     
@@ -62,7 +62,7 @@ class FieldSerialized(BaseModel):
     number: float
 
     # IF WE HAVE 1/3 FOR NUMBER, THAT CAN BE 0.333333333333333333 AND WE NEED TO ROUND THAT NUMBER
-    @filed_serializer("number")
+    @field_serializer("number")
     def serialize_float(self, value):
         return round(value, 2)
 

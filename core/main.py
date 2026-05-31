@@ -2,7 +2,6 @@ from fastapi import FastAPI, Query, status, HTTPException, Path, Form, Body, Upl
 from typing import List
 import random
 from contextlib import asynccontextmanager
-from fastapi_swagger import patch_fastapi
 from schemas import PersonCreateSchema, PersonResponseSchema, PersonUpdateSchema
 from typing import List
 
@@ -25,7 +24,6 @@ async def lifespan(app: FastAPI):
     print("Application shutdown")
 
 app = FastAPI(lifespan=lifespan)
-patch_fastapi(app)
 
 # ---- RESTFULL APIS GET/POST/PUT/PATCH/DELETE ----
 # ---- + QUERY, PATH, FORM VALIDATION ---- (PYDANTINC FOR BODY VALIDATION IS GOING TO BE USED)
