@@ -14,20 +14,52 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 # CRETES BASE CLASS FOR DECLARING TABLES
 Base = declarative_base()
 
-# TO CREATE TABLES AND DATABASE
-Base.metadata.create_all(engine)
-
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(length=30))
-    last_name = Column(String(length=30))
+    last_name = Column(String(length=30), nullable=True)
     age = Column(Integer())
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
 
     def __repr__(self):
         return f"User(id={self.id}, fisrt_name={self.first_name}, last_name={self.last_name})"
+
+# TO CREATE TABLES AND DATABASE
+Base.metadata.create_all(engine)
+
+# CREATES SESSION FROM SESSIONLOCAL FACTORY PATTERN
+session = SessionLocal()
+
+# INSERTING DATA
+anthon = User(first_name="anthon", age=31)
+session.add(anthon)
+session.commit()
+session.refresh(anthon)
+
+# BULK INSERT
+maryam = User(first_name="maryam", age=27)
+arousha = User(first_name="arousha", age=6)
+users = [maryam, arousha]
+session.add_all(users)
+session.commit()
+
+# RETRIEVE ALL DATA
+all_users = session.query(User).all()
+print(all_users)
+
+# RETRIEVE DATA WITH FILTER
+filterd_user = session.query(User).filter_by(first_name="ali").one_or_none()
+print(filterd_user)
+
+# UPDATE A RECORD OF DATA
+anthon.last_name = "Ahmoham"
+session.commit()
+
+# DELETE A RECORD OF DATA
+session.delete(anthon)
+session.commit()
 
 class RelationsTable(Base):
     ___tablename__ = 'relations'
