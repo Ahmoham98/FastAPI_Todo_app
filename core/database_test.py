@@ -16,6 +16,7 @@ Base = declarative_base()
 
 class User(Base):
     __tablename__ = "users"
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     first_name = Column(String(length=30))
     last_name = Column(String(length=30), nullable=True)
@@ -23,8 +24,44 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
 
+
+    addresses = relationship("Address", backref="user")
+    profile = relationship("Profile", backref="user", uselist=False)
+
     def __repr__(self):
         return f"User(id={self.id}, fisrt_name={self.first_name}, last_name={self.last_name})"
+
+class Address(Base):
+    __tablename__ = "addresses"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    
+
+    city = Column(String())
+    state = Column(String())
+    zip_code = Column(String())
+
+    def __repr__(self):
+        return f"Address(id={self.id}, user_id={self.user_id}, city={self.city}, state={self.state}, zip_code={self.zip_code})"
+
+
+class Profile(Base):
+    __tablename__ = "profiles"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(Integer, ForeignKey("users.id"), unique=True)
+    # Alternative - BEST PRACTICE SOMETIMES - WHAT YOU ACTUALLY DO HERE IS TO USE USER_ID OF REALTION AS PRIMARY KEY ITSELF INSTRAD OF ID_&_USERID
+    #user_id = Column(Integer, ForeignKey("users.id"), primary_key=True)
+
+    first_name = Column(String())
+    last_name = Column(String())
+    bio = Column(Text(), nullable=True)
+
+    def __repr__(self):
+        return f"Profile(id={self.id}, user_id={self.user_id}, first_name={self.first_name}, last_name={self.last_name}, bio={self.bio})"
+
+
 
 # TO CREATE TABLES AND DATABASE
 Base.metadata.create_all(engine)
@@ -109,14 +146,14 @@ class SampleModel(Base):
 # ---- ONE TO MANY RALATIONSHIP EXMAPLE ----
 '''You place a ForeignKey on the “many” side (the Post table) and use relationship() on both sides to make navigation easy.'''
 class User(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
     posts = relationship("Post", back_populates="author")
 
 class Post(Base):
     __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
     author = relationship("User", back_populates="posts")
 
 
