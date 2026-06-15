@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 
-POSTGESQL_DATABASE_URL = "postgesql+asyncpg://postgres:postgres@localhost/todoAppdatabase"
+POSTGESQL_DATABASE_URL = "postgesql://postgres:postgres@localhost/todoAppdatabase"
 
 
 engine = create_engine(POSTGESQL_DATABASE_URL, echo=False)
