@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text, Boolean, Fl
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from enum import Enum as PythonEnum
 
-SQLALCHEMY_DATABASE_URL = "postgeswl://user:password@postgrsserver/db"
+SQLALCHEMY_DATABASE_URL = "postgesql://user:password@postgrsserver/db"
 
 # SQLALCHEMY_DATABASE_URL = "sqlite"///./sqlite.db"
 # SQLALCHEMY_DATABASE_URL = "mysql://username:password@localhost/db_name

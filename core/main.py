@@ -4,6 +4,7 @@ import random
 from contextlib import asynccontextmanager
 from schemas import PersonCreateSchema, PersonResponseSchema, PersonUpdateSchema
 from typing import List
+from database import Base, engine
 
 # ---- EXAMPLE DATABASE FOR NOW TILL DATABASE IMPLEMENTATION ----
 names_list = [
@@ -20,6 +21,7 @@ names_list = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
+    Base.metadata.create_all(engine)
     yield
     print("Application shutdown")
 
