@@ -21,7 +21,8 @@ names_list = [
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
-    Base.metadata.create_all(engine)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
     print("Application shutdown")
 
@@ -35,7 +36,8 @@ app = FastAPI(lifespan=lifespan)
 
 # RETURNS THE WHOLE USER LIST
 @app.get("/names", response_model=List[PersonResponseSchema])
-def retrieve_names_list(q: str | None = Query(              # QUERY PARAMETER VALIDATION
+def retrieve_names_list(
+                        q: str | None = Query(              # QUERY PARAMETER VALIDATION
                                             default=None,
                                             alias='searh', 
                                             title='search_filter', 
@@ -68,7 +70,8 @@ def create_name(person: PersonCreateSchema):
 
 # RETURN USER WITH THE GIVEN USER_ID
 @app.get("/names/{name_id}", response_model=PersonResponseSchema)
-def retrieve_name_detail(name_id: int = Path(                       # PATH PARAMETER VALIDATION
+def retrieve_name_detail(
+                        name_id: int = Path(                       # PATH PARAMETER VALIDATION
                                             title='object ID',
                                             description='The ID of the name in the names_list',
                                             ge=1,
@@ -83,7 +86,9 @@ def retrieve_name_detail(name_id: int = Path(                       # PATH PARAM
 
 # UPDATES USER WITH GIVEN USER_ID
 @app.put("/names/{name_id}", status_code=status.HTTP_200_OK, response_model=PersonResponseSchema)
-def update_name(person: PersonUpdateSchema, name_id: int = Path(                  # PATH PARAMETER VALIDATION
+def update_name(
+                person: PersonUpdateSchema, 
+                name_id: int = Path(                  # PATH PARAMETER VALIDATION
                                                             alias='object_ID',
                                                             title='object ID',
                                                             description='The ID of the name in the names_list',
@@ -100,7 +105,8 @@ def update_name(person: PersonUpdateSchema, name_id: int = Path(                
 
 # DELETS USER WITH GIVEN USER_ID
 @app.delete("/names/{name_id}", status_code=status.HTTP_204_NO_CONTENT)
-def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATION
+def delete_name(
+                ame_id: int = Path(                  # PATH PARAMETER VALIDATION
                                     alias='object_ID',
                                     title='object ID',
                                     description='The ID of the name in the names_list',
@@ -117,7 +123,8 @@ def delete_name(name_id: int = Path(                  # PATH PARAMETER VALIDATIO
 
 # HANDLES FORM USING FORM()
 @app.post("/from", status_code=status.HTTP_201_CREATED)
-def create_name(name: str = Form(                           # FORM DATA VALIDATION
+def create_name(
+                name: str = Form(                           # FORM DATA VALIDATION
                                 title='username',
                                 description='Name of user you want to create in application',
                                 ge=3,
@@ -131,7 +138,8 @@ def create_name(name: str = Form(                           # FORM DATA VALIDATI
 
 # HANDLES BODY USING BODY() SAME AS WHAT WE HAD FOR QUERY(), PATH(), FORM()
 @app.get("/body")
-def get_body_example(name: str = Body(
+def get_body_example(
+                    name: str = Body(
                                     title='request body',
                                     description='Enter required body format for this API',
                                     ge=1,
