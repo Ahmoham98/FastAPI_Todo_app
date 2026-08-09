@@ -53,7 +53,7 @@ async def updates_task_data(task_data: TaskUpdateSchema, task_id: int = Path(...
     await db.refresh(task)
     return task
 
-@router.delete("/tasks/{task_id}", response_model=TaksResposeSchema, status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def deletes_task(task_id: int = Path(..., gt=0), db: AsyncSession = Depends(get_db)):
     statement = select(TaskModel).where(TaskModel.id == task_id)
     result = await db.execute(statement)
