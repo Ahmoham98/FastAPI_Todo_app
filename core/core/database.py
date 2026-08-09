@@ -2,10 +2,10 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from config import Settings
+from core.config import settings
 
 engine = create_async_engine(
-    Settings.DATABASE_URL,
+    settings.SQLALCHEMY_DATABASE_URL,
     echo=False,  # تو پروداکشن False
     pool_size=10,  # تعداد کانکشن‌های اولیه
     max_overflow=20,  # حداکثر کانکشن اضافه

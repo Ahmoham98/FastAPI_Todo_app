@@ -3,8 +3,8 @@ from datetime import datetime
 
 class TaskBaseSchema(BaseModel):
     title: str = Field(..., max_length=150, min_length=5, description="Title of the task")
-    description: str = Field(None, max_length=500, description="Description of the task") | None
-    is_done: bool = Field(..., description="State of the task")
+    description: str | None = Field(None, max_length=500, description="Description of the task")
+    is_done: bool = Field(default=False, description="State of the task")
 
 class TaskCreateSchema(TaskBaseSchema):
     pass
