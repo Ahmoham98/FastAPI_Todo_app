@@ -19,8 +19,8 @@
 - 2. simply run "fastapi dev" 
 - 3. you have developement mode on working
 - 4. for routes that have database interaction, you have these following options:
-    - 1. (Docker Image 🏍) run a postgreSQL image using docker manually by pulling ralated image and running it
-    - 2. (Docker Compose 🚗) run a postgreSQL image using docker-compose.yml file with the following content:
+    - (Docker Image 🏍) run a postgreSQL image using docker manually by pulling ralated image and running it
+    - (Docker Compose 🚗) run a postgreSQL image using docker-compose.yml file with the following content:
         services:
             db:
                 image: postgres:15-alpine
@@ -37,7 +37,7 @@
 
             volumes:
             postgres_data: 
-    - 3. (Local PostgreSQL 🚲) download postgreSQL app and run it localy and setup a database with the following configurations:
+    - (Local PostgreSQL 🚲) download postgreSQL app and run it localy and setup a database with the following configurations:
         POSTGRES_USERNAME -> user
         POSTGRES_PASSWORD -> password
         POSTGRES_DATABASE_NAME -> TodoappTemplateTypeA
@@ -72,6 +72,8 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
     port -> 5432 (or any other desired port base on what you are working on...)
 
 # About Appliation
+## Technologies
+- FastAPI python Framework for fast async backend developement
 - SQLAlchemy ORM for code first database connection
 - Alembic for Database migration management
 - asyncpg configuration for async conncetion to default database (e.g PostgrSQL)
