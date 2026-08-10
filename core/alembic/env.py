@@ -17,7 +17,12 @@ from core.config import settings
 config = context.config
 
 if settings.SQLALCHEMY_DATABASE_URL:
-    config.set_main_option("sqlalchemy.url", settings.SQLALCHEMY_DATABASE_URL)
+    db_url = settings.SQLALCHEMY_DATABASE_URL
+    # Replacing async driver with sync driver if we are using async postgres driver for migration connection
+    if "+asyncpg" in db_url:
+        db_url = db_url.replace("+asyncpg", "")
+
+    config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
