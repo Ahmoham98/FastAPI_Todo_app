@@ -10,7 +10,8 @@ class TaskCreateSchema(TaskBaseSchema):
     pass
 
 class TaskUpdateSchema(TaskBaseSchema):
-    pass
+    # Rewrite title to be Optional
+    title: str | None = Field(None, max_length=150, min_length=5, description="Title of the task")
 
 class TaksResposeSchema(TaskBaseSchema):
     id: int = Field(..., description="Unique identifier of the object")
