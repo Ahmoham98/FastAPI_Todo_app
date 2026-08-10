@@ -7,11 +7,11 @@ class TaskModel(Base):
     
     id = Column(Integer, primary_key=True, autoincrement=True)
     title = Column(String(150), nullable=False)
-    description = Column(Text(500), nullable=True ,default="")
+    description = Column(String(500), nullable=True ,default="")
     is_done = Column(Boolean,default=False)
 
     created_date = Column(DateTime, server_default=func.now())
-    created_date = Column(DateTime, server_default=func.now(), server_onupdate=func.now())
+    updated_date = Column(DateTime, server_default=func.now(), server_onupdate=func.now())
 
     
     def __repr__(self) -> str:
