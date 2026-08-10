@@ -1,19 +1,32 @@
-from fastapi import APIRouter, Path, Depends, HTTPException, status
+from fastapi import APIRouter, Path, Depends, HTTPException, status, Query
 
 from tasks.schema import TaskCreateSchema, TaksResposeSchema, TaskUpdateSchema
 from tasks.models import TaskModel
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
 from core.database import get_db
+from core.pagination import PaginationParams, apply_pagination
 
 from typing import List
 
 router = APIRouter(prefix="/todo", tags=["tasks"])
 
 @router.get("/tasks", response_model=List[TaksResposeSchema])
-async def retrieve_tasks_list(db: AsyncSession = Depends(get_db)):
+async def retrieve_tasks_list(
+    completed: bool = Query(None, description="filter tasks base on if they are completed"),
+    pagination: PaginationParams = Depends(),
+    db: AsyncSession = Depends(get_db)
+):
     statement = select(TaskModel)
+
+    # filters resluts if we had completed Query
+    if completed is not None:
+        statement = statement.where(TaskModel.is_done == completed)
+
+    statement = apply_pagination(statement, pagination)
+
     result = await db.execute(statement)
     return result.scalars().all()
 
