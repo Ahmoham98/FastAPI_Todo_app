@@ -79,5 +79,6 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 - asyncpg configuration for async conncetion to default database (e.g PostgrSQL)
 - pydantic-settings for single source of configuration in the whole project
 - Dependnecy Injection database connection for
-
+## Better to know about Project and Application
+- in rotues.py, flush is used and it will be commited automatically using dependency injection where you define "get db"
 
