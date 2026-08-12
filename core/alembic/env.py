@@ -35,6 +35,7 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 from core.database import Base
 from tasks.models import TaskModel
+from users.models import UserModel
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
