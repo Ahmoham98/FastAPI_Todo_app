@@ -2,6 +2,10 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from tasks.routes import router as task_router
 
+# Import Users to avoid infinite cycle on Table relationship defining 
+from tasks.models import TaskModel
+from users.models import UserModel
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
