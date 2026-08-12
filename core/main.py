@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from tasks.routes import router as task_router
 
-# Import Users to avoid infinite cycle on Table relationship defining 
+# Import Users to avoid circular import when defininf Table relationship 
 from tasks.models import TaskModel
 from users.models import UserModel
 
