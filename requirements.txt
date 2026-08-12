@@ -2,4 +2,4 @@ fastapi[all]>0.141,<0.142
 alembic>1.19,<1.20
 asyncpg==0.31.0
 psycopg2-binary==2.9.12
-passlib
+pwdlib[argon2]>0.2.9, <0.4
