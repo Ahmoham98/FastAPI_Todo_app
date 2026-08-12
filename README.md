@@ -3,6 +3,14 @@
 - You can simply clone the project, run the Application and start developing your fastapi app using this template which also is easy to scale as your app goes to scale to become bigger as your files and folders grows. this template helps you to focus more on developement rather than taking time on arranging standard template for developing fastapi apps
 - if your project is going to grow bigger and you need bigger standard template, checkout this link: https://github.com/fastapi/full-stack-fastapi-template
 
+## user authentication
+### JWT Token Authentication
+- this application is using JWT for authentication
+- /Login route for users login:
+1. checks if user exists and if it is a valid user, it is going to return access_token & Refresh_token
+- /Register rotue for users Registration
+1. if user dosn't exists, make sure user is entering valid data and inserts new user into database
+
 # How to run the Application
 ## Run the whole Application with docker-compose 🐳
 - 1. navigate to root directory
@@ -72,13 +80,36 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
     port -> 5432 (or any other desired port base on what you are working on...)
 
 # About Appliation
-## Technologies
+## Technologies ⚙
 - FastAPI python Framework for fast async backend developement
 - SQLAlchemy ORM for code first database connection
 - Alembic for Database migration management
 - asyncpg configuration for async conncetion to default database (e.g PostgrSQL)
 - pydantic-settings for single source of configuration in the whole project
 - Dependnecy Injection database connection for
-## Better to know about Project and Application
+- pwdlib for password hashing using 
+## Endpoints
+- GET /api/v1/todo/tasks
+    returns all found tasks from database + Pagination
+- GET /api/v1/todo/tasks/{task_id}
+    returns founded tasks from database with given task_id
+- POST /api/v1/todo/tasks
+    inserts new tasks to database
+- PUT /api/v1/todo/tasks/{task_id}
+    updates task's data for the found task in database with given task_id
+- DELETE /api/v1/todo/tasks/{task_id}
+    removes task from database by the found task in database with given task_id
+- GET /users/login
+    Logs the user in: 
+    1. checks if user exists
+    2. checks if user's password is valid
+    3. if okey, Generate access_token
+- GET /users/register
+    Registers User
+    1. check if user already exists
+    2. inserts user for login
+- for full documentation check /doc or /redoc like: "http://127.0.0.1:8000/docs" or "http://127.0.0.1:8000/redoc" for redoc (Verbose version of /docs)
+## Better to know about Project and Application 
 - in rotues.py, flush is used and it will be commited automatically using dependency injection where you define "get db"
+- Hash password and verify password helper function are in UserModel class as a method. You can move them to util or share directory on project scalling or keep them in UserModel
 
