@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from tasks.routes import router as task_router
 from users.routes import router as user_router
 
-# Import Users to avoid circular import when defininf Table relationship 
+# Import Users to avoid circular import when define Table relationship 
 from tasks.models import TaskModel
 from users.models import UserModel
 
@@ -57,5 +57,10 @@ app.include_router(user_router, prefix="/api/v1")
 async def get_root():
     return {"detail": "Welcome to Todo app aplication!"}
 
+@app.get("/public", tags=["main"])
+async def get_root():
+    return {"detail": "You have successfully connected to public route"}
 
-
+@app.get("/private", tags=["main"])
+async def get_root():
+    return {"detail": "Your have successfully connected to private route"}
