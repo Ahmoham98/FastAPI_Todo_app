@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from contextlib import asynccontextmanager
 
 from tasks.routes import router as task_router
@@ -7,6 +7,8 @@ from users.routes import router as user_router
 # Import Users to avoid circular import when define Table relationship 
 from tasks.models import TaskModel
 from users.models import UserModel
+
+from core.security import get_current_user, get_current_user_from_cookie
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -58,9 +60,21 @@ async def get_root():
     return {"detail": "Welcome to Todo app aplication!"}
 
 @app.get("/public", tags=["main"])
-async def get_root():
+async def test_public_root():
     return {"detail": "You have successfully connected to public route"}
 
 @app.get("/private", tags=["main"])
-async def get_root():
-    return {"detail": "Your have successfully connected to private route"}
+async def get_authenticated_user(current_user: UserModel = Depends(get_current_user)):
+    return {
+        "detail": "Your have successfully connected to private route",
+        "user_id": current_user.id,
+        "user_is_active": current_user.is_active,
+    }
+
+@app.get("/private/from-cookie", tags=["main"])
+async def get_authenticated_user_by_cookie(current_user: UserModel = Depends(get_current_user_from_cookie)):
+    return {
+            "detail": "Your have successfully connected to private route",
+            "user_id": current_user.id,
+            "user_is_active": current_user.is_active,
+        }

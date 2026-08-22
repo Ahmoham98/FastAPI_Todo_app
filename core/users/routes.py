@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 
 from users.models import UserModel
 from users.schema import (
@@ -66,6 +67,45 @@ async def user_login(
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
+
+@router.post("/login-cookie", response_model=TokenResponseSchema)
+async def user_login(
+    request: UserLoginSchema, 
+    response: Response,
+    db: AsyncSession = Depends(get_db)
+):
+    result = await db.execute(select(UserModel).where(UserModel.email == request.email.lower()))
+    user = result.scalar_one_or_none()
+
+    if user is None or not user.verify_password(request.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+        )
+    
+    token_data = {"sub": str(user.id)}
+    access_token = create_access_token(token_data)
+    refresh_token = create_refresh_token(token_data)
+
+    # HttpOnly Cookie
+    # 1. Access token
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    # 2. Refresh token
+    response.set_cookie(
+            key="refresh_token",
+            value=refresh_token,
+            httponly=True,
+            secure=True,
+            samesite="lax"
+        )
+
+    return {"detail": "Logged in successfully via cookie"}
 
 @router.post("/refresh-token", response_model=TokenResponseSchema)
 async def refresh_access_token(
