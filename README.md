@@ -128,4 +128,4 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 8. and finally change token_data value from {"sub": str(user_id)} to {"sub": user.email}
 9. you also by implementing these changes, don't need to check if user still exists, so you can remove that part of code or you can change it to check if user still exists by checking if email is still exists. (that can be modified base on your usecase)
 10. and done, now your JWT is considering email instead of user id for sub in your payload
-
+### HttpOnly cookie base JWT Authentication is also implemented you can check it in /login-cookie endpoint and related dependencies in core/security.py file path, where security related functions are gathered
