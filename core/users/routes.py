@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Cookie
 from fastapi.responses import Response
+from fastapi.security import OAuth2PasswordRequestForm
 
 from users.models import UserModel
 from users.schema import (
@@ -108,7 +109,7 @@ async def user_login(
     return {"detail": "Logged in successfully via cookie"}
 
 @router.post("/refresh-token", response_model=TokenResponseSchema)
-async def refresh_access_token(
+async def refresh_token(
     request: RefreshTokenSchema,
     db: AsyncSession = Depends(get_db)
 ):
@@ -143,8 +144,80 @@ async def refresh_access_token(
         "token_type": "bearer"
     }
 
+@router.post("/refresh-token-cookie", response_model=TokenResponseSchema)
+async def refresh_token_from_cookie(
+    response: Response,
+    refresh_token: str = Cookie(None),
+    db: AsyncSession = Depends(get_db)
+):
+    if not refresh_token:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Refresh token not provided"
+        )
 
+    payload = verify_token(refresh_token, expected_type="refresh")
 
+    user_id_str = payload.get("sub")
+    if not user_id_str:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload"
+        )
 
+    # Checking if user still exists
+    result = await db.execute(select(UserModel).where(UserModel.id == int(user_id_str)))
+    user = result.scalar_one_or_none()
 
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive"
+        )
 
+    # Token Rotation
+    token_data = {"sub": str(user.id)}
+    new_access_token = create_access_token(token_data)
+    new_refresh_token = create_refresh_token(token_data)
+
+    # Set new tokens in HttpOnly cookies
+    response.set_cookie(
+        key="access_token",
+        value=new_access_token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+    response.set_cookie(
+        key="refresh_token",
+        value=new_refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax"
+    )
+
+    return {"detail": "Tokens refreshed successfully via cookie"}
+
+@router.post("/login-Authorize-button", response_model=TokenResponseSchema)
+async def user_login_authorize_button(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: AsyncSession = Depends(get_db),
+):
+    result = await db.execute(select(UserModel).where(UserModel.email == form_data.username.lower()))
+    user = result.scalar_one_or_none()
+
+    if user is None or not user.verify_password(form_data.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid username or password",
+        )
+    
+    token_data = {"sub": str(user.id)}
+    access_token = create_access_token(token_data)
+    refresh_token = create_refresh_token(token_data)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
