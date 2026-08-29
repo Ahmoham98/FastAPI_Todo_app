@@ -16,7 +16,7 @@ REFRESH_TOKEN_EXPIRE_DAYS = 7
 ALGORITHM = "HS256"
 SECRET_KEY = getattr(settings, "JWT_SECRET_KEY", "YOUR_SUPER_SECRET_KEY")
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/v1/users/login-Authorize-button")
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
