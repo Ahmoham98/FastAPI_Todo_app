@@ -6,9 +6,10 @@ from users.routes import router as user_router
 
 # Import Users to avoid circular import when define Table relationship 
 from tasks.models import TaskModel
-from users.models import UserModel
+from users.models import UserModel, UserRole
 
 from core.security import get_current_user, get_current_user_from_cookie
+from core.dependencies import RoleChecker
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -78,3 +79,12 @@ async def get_authenticated_user_by_cookie(current_user: UserModel = Depends(get
             "user_id": current_user.id,
             "user_is_active": current_user.is_active,
         }
+
+@app.get("/check-role", tags=["main"])
+async def check_user_role(current_user: UserModel = Depends(RoleChecker(allowed_roles=[UserRole.ADMIN, UserRole.USER]))):
+    return {
+        "detail": "Your have successfully connected to role-check route",
+        "user_id": current_user.id,
+        "user_role": current_user.role,
+    }
+
