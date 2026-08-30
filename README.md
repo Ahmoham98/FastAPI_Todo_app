@@ -117,12 +117,12 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
     2. inserts user for login
 - for full documentation check /doc or /redoc like: "http://127.0.0.1:8000/docs" or "http://127.0.0.1:8000/redoc" for redoc (Verbose version of /docs)
 ## Better to know about Project and Application 
-#### in rotues.py, flush is used and it will be commited automatically using dependency injection where you define "get db"
-#### Tables id are defiend as integer type... . You can upgrade to UUID anytime you prefered
-#### Hash password and verify password helper function are in UserModel class as a method. You can move them to util or share directory on project scalling or keep them in UserModel
-#### Refresh Token Rotation is implemented (but tokens are not being stored in database yet for proper refresh token validation before token rotation - it may be updated to have it, make sure you implement it in production for your application if it is not already implemented for this template)
-#### default settings for token expiration are: ACCESS_TOKEN_EXPIRE_MINUTES = 15,  REFRESH_TOKEN_EXPIRE_DAYS = 7 & ALGORITHM = "HS256". You can adjust them base on your usecase in "core/core/security.py" file 
-#### JWT sub is checking user_id insted of email due to technical standards. You can change it to consider email in "sub" of JWT Payload if you prefer. Considering it's Cons and Prons
+#### --> in rotues.py, flush is used and it will be commited automatically using dependency injection where you define "get db"
+#### --> Tables id are defiend as integer type... . You can upgrade to UUID anytime you prefered
+#### --> Hash password and verify password helper function are in UserModel class as a method. You can move them to util or share directory on project scalling or keep them in UserModel
+#### --> Refresh Token Rotation is implemented (but tokens are not being stored in database yet for proper refresh token validation before token rotation - it may be updated to have it, make sure you implement it in production for your application if it is not already implemented for this template)
+#### --> default settings for token expiration are: ACCESS_TOKEN_EXPIRE_MINUTES = 15,  REFRESH_TOKEN_EXPIRE_DAYS = 7 & ALGORITHM = "HS256". You can adjust them base on your usecase in "core/core/security.py" file 
+#### --> JWT sub is checking user_id insted of email due to technical standards. You can change it to consider email in "sub" of JWT Payload if you prefer. Considering it's Cons and Prons
 - for changing it, go for the following parts of the code:
 1. go to where we have defiend /login endpoint
 2. find token_data value, and change it form {"sub": str(user_id)} to {"sub": user.email}
