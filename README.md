@@ -17,6 +17,12 @@
 - then navigate to core/core/dependencies.py where RoleChecker exists and adjust the checking logic if any more consideration needed
 - finally you can use role checker cleanly as dependency in your routes same as "/api/v1/users/check-role" route we already implemented... (allowed roles argument tells the checker which roles can have access to this routes...)
 
+## Middlewares
+- HTTPSRedirectMiddleware
+- TrustedHostMiddleware
+- GZipMiddleware (for compressing long responses)
+- CORSMiddleware
+
 # How to run the Application
 ## Run the whole Application with docker-compose 🐳
 - 1. navigate to root directory

@@ -1,11 +1,11 @@
-from fastapi import FastAPI, Depends, status, HTTPException
+from fastapi import FastAPI, Depends, status, HTTPException, Request
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from tasks.routes import router as task_router
 from users.routes import router as user_router
 
-# Import Users to avoid circular import when define Table relationship 
+# Import Users to avoid circular import when define Table relationship (Do not delete them)
 from tasks.models import TaskModel
 from users.models import UserModel, UserRole
 
@@ -14,6 +14,7 @@ from core.config import settings
 from core.dependencies import RoleChecker
 from core.database import get_db
 from core.seeder import seed_data
+from core.middleware import setup_middlewares
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -57,9 +58,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+
+# ---- Middleware and routes ----
+setup_middlewares(app)
+
 app.include_router(task_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
+# ------------------------------
 
+# ---- endpoints ----
 @app.get("/", tags=["root"])
 async def get_root():
     return {"detail": "Welcome to Todo app aplication!"}
@@ -112,5 +119,5 @@ async def trigger_seed_data(
 
     result = await seed_data(db, user_count=user_count, tasks_per_user=tasks_per_user)
     return result
-
+# ------------------------------
 
