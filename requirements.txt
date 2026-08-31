@@ -4,3 +4,4 @@ asyncpg==0.31.0
 psycopg2-binary==2.9.12
 pwdlib[argon2]>0.2.9,<0.4
 PyJWT>=2.13,<2.14
+Faker>=40.37, <=40.38

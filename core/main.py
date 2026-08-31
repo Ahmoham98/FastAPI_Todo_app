@@ -1,5 +1,6 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status, HTTPException
 from contextlib import asynccontextmanager
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from tasks.routes import router as task_router
 from users.routes import router as user_router
@@ -9,7 +10,10 @@ from tasks.models import TaskModel
 from users.models import UserModel, UserRole
 
 from core.security import get_current_user, get_current_user_from_cookie
+from core.config import settings
 from core.dependencies import RoleChecker
+from core.database import get_db
+from core.seeder import seed_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -87,4 +91,26 @@ async def check_user_role(current_user: UserModel = Depends(RoleChecker(allowed_
         "user_id": current_user.id,
         "user_role": current_user.role,
     }
+
+@app.post("/seed-data", status_code=status.HTTP_201_CREATED, tags=['seed_data'])
+async def trigger_seed_data(
+    user_count: int = 5,
+    tasks_per_user: int = 3,
+    db: AsyncSession = Depends(get_db)
+):
+    """Inserts new data to database for developement 
+
+    Args:
+        user_count (int, optional): number of users you want it to insert to database. Defaults to 5.
+        tasks_per_user (int, optional): number of tasks you want to insert to database per user. Defaults to 3.
+    """
+    if getattr(settings, "ENVIRONMENT", "development") == "production":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Seeding data is not allowed in production environment."
+        )
+
+    result = await seed_data(db, user_count=user_count, tasks_per_user=tasks_per_user)
+    return result
+
 
