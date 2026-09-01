@@ -4,7 +4,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
-# از HTTPSRedirectMiddleware هم اگر خواستید می‌توانید استفاده کنید
+from core.middleware.i18n import I18NMiddleware     # Custom Translation Middleware
+# if you want to use HTTPSRedirectMiddleware 
 # from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 def setup_middlewares(app: FastAPI) -> None:
@@ -14,20 +15,27 @@ def setup_middlewares(app: FastAPI) -> None:
         app (FastAPI): Your application object
     """
 
-    # 1. Trusted hosts settings
+    # 1.I18N Middleware
+    app.add_middleware(
+        I18NMiddleware,
+        locales_path="core/core/i18n/locales",
+        default_locale="en"
+    )
+
+    # 2.Trusted hosts settings
     app.add_middleware(
         TrustedHostMiddleware, 
         allowed_hosts=["localhost", "127.0.0.1", "*.example.com"] # set your allowed hosts here
     )
 
-    # 2. Responses conmpression
+    # 3.Responses conmpression
     app.add_middleware(
         GZipMiddleware, 
         minimum_size=1000, 
         compresslevel=5
     )
 
-    # 3.CORS settings
+    # 4.CORS settings
     origins = [
         "http://localhost",
         "http://localhost:8000",
@@ -41,7 +49,7 @@ def setup_middlewares(app: FastAPI) -> None:
         allow_headers=["*"],
     )
 
-    # 4.Custom middleware for process-time calculation
+    # 5.Custom middleware for process-time calculation
     @app.middleware("http")
     async def add_process_time_header(request: Request, call_next):
         start_time = time.perf_counter()
@@ -50,5 +58,5 @@ def setup_middlewares(app: FastAPI) -> None:
         response.headers["X-Process-Time"] = str(process_time)
         return response
 
-    # 5.Redirect middleware (you can Activate it if required)
+    # 6.Redirect middleware (you can Activate it if required)
     # app.add_middleware(HTTPSRedirectMiddleware)

@@ -2,19 +2,19 @@ from fastapi import FastAPI, Depends, status, HTTPException, Request
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from tasks.routes import router as task_router
-from users.routes import router as user_router
+from core.tasks.routes import router as task_router
+from core.users.routes import router as user_router
 
 # Import Users to avoid circular import when define Table relationship (Do not delete them)
-from tasks.models import TaskModel
-from users.models import UserModel, UserRole
+from core.tasks.models import TaskModel
+from core.users.models import UserModel, UserRole
 
-from core.security import get_current_user, get_current_user_from_cookie
-from core.config import settings
-from core.dependencies import RoleChecker
-from core.database import get_db
-from core.seeder import seed_data
-from core.middleware import setup_middlewares
+from core.core.security import get_current_user, get_current_user_from_cookie
+from core.core.config import settings
+from core.core.dependencies import RoleChecker
+from core.core.database import get_db
+from core.core.seeder import seed_data
+from core.core.middleware import setup_middlewares
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -98,6 +98,12 @@ async def check_user_role(current_user: UserModel = Depends(RoleChecker(allowed_
         "user_id": current_user.id,
         "user_role": current_user.role,
     }
+
+@app.get("/translate", tags=["translate"])
+async def translate_response(request: Request):
+    # 1.Exrtact translation function
+    _ = request.state._
+    return {"message": _("Welcome to our platform.")}
 
 @app.post("/seed-data", status_code=status.HTTP_201_CREATED, tags=['seed_data'])
 async def trigger_seed_data(
