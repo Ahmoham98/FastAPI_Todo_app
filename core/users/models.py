@@ -5,7 +5,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from pwdlib import PasswordHash
-from core.database import Base
+from core.core.database import Base
 
 # Creates an object for hashing password
 password_hash = PasswordHash.recommended()

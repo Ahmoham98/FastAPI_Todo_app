@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
-from users.models import UserModel, UserRole
-from core.security import get_current_user
+from core.users.models import UserModel, UserRole
+from core.core.security import get_current_user
 
 
 class RoleChecker:

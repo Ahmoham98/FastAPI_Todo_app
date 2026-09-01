@@ -1,15 +1,15 @@
 from fastapi import APIRouter, Path, Depends, HTTPException, status, Query
 
-from tasks.schema import TaskCreateSchema, TaksResposeSchema, TaskUpdateSchema
-from tasks.models import TaskModel
-from users.models import UserModel
+from core.tasks.schema import TaskCreateSchema, TaksResposeSchema, TaskUpdateSchema
+from core.tasks.models import TaskModel
+from core.users.models import UserModel
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from core.database import get_db
-from core.pagination import PaginationParams, apply_pagination
-from core.security import get_current_user
+from core.core.database import get_db
+from core.core.pagination import PaginationParams, apply_pagination
+from core.core.security import get_current_user
 
 from typing import List
 

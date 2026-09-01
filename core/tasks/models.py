@@ -1,5 +1,5 @@
-from core.database import Base
-from sqlalchemy import Boolean, Column, Integer, String, Text, DateTime, func, ForeignKey
+from core.core.database import Base
+from sqlalchemy import Boolean, Column, Integer, String, DateTime, func, ForeignKey
 from sqlalchemy.orm import relationship
 
 class TaskModel(Base):

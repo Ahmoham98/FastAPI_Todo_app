@@ -12,7 +12,7 @@
 1. if user dosn't exists, make sure user is entering valid data and inserts new user into database
 
 ## RBAC for Authorization control
-### We have USER & ADMIN roles implemented
+### USER & ADMIN roles implemented (Adjust based on requirements)
 - you can Simply go to core/users/models.py where RoleChecker class exists, and add more roles for validation
 - then navigate to core/core/dependencies.py where RoleChecker exists and adjust the checking logic if any more consideration needed
 - finally you can use role checker cleanly as dependency in your routes same as "/api/v1/users/check-role" route we already implemented... (allowed roles argument tells the checker which roles can have access to this routes...)
@@ -101,6 +101,7 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 - Dependnecy Injection database connection for
 - pwdlib for password hashing using 
 - PyJWT
+- gettext
 ## Endpoints
 - GET /api/v1/todo/tasks
     returns all found tasks from database + Pagination
@@ -131,7 +132,7 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 #### Refresh Token Rotation is implemented (but tokens are not being stored in database yet for proper refresh token validation before token rotation - it may be updated to have it, make sure you implement it in production for your application if it is not already implemented for this template)
 #### default settings for token expiration are: ACCESS_TOKEN_EXPIRE_MINUTES = 15,  REFRESH_TOKEN_EXPIRE_DAYS = 7 & ALGORITHM = "HS256". You can adjust them base on your usecase in "core/core/security.py" file 
 #### JWT sub is checking user_id insted of email due to technical standards. You can change it to consider email in "sub" of JWT Payload if you prefer. Considering it's Cons and Prons
-- for changing it, go for the following parts of the code:
+for changing it, go for the following parts of the code:
 1. go to where we have defiend /login endpoint
 2. find token_data value, and change it form {"sub": str(user_id)} to {"sub": user.email}
 3. now, login endpoint is considering email in JWT sub payload

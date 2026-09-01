@@ -2,16 +2,16 @@ from fastapi import APIRouter, Depends, HTTPException, status, Cookie
 from fastapi.responses import Response
 from fastapi.security import OAuth2PasswordRequestForm
 
-from users.models import UserModel
-from users.schema import (
+from core.users.models import UserModel
+from core.users.schema import (
     UserRegisterSchema,
     UserLoginSchema,
     TokenResponseSchema,
     RefreshTokenSchema
 )
 
-from core.database import get_db
-from core.security import (
+from core.core.database import get_db
+from core.core.security import (
     create_access_token,
     create_refresh_token, 
     verify_token

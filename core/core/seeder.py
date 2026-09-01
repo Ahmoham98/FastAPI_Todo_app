@@ -1,11 +1,11 @@
 import random
 from fastapi import Depends
-from core.database import get_db
+from core.core.database import get_db
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from users.models import UserModel, UserRole
-from tasks.models import TaskModel
+from core.users.models import UserModel, UserRole
+from core.tasks.models import TaskModel
 
 fake = Faker()
 

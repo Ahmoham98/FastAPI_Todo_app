@@ -4,9 +4,9 @@ import jwt
 from fastapi import HTTPException, status, Depends, Cookie
 from fastapi.security import OAuth2PasswordBearer
 
-from core.config import settings
-from core.database import get_db
-from users.models import UserModel
+from core.core.config import settings
+from core.core.database import get_db
+from core.users.models import UserModel
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
