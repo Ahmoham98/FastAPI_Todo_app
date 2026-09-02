@@ -5,11 +5,7 @@ from fastapi_babel import Babel, BabelConfigs
 I18N_DIR = Path(__file__).resolve().parent
 LOCALES_DIR = I18N_DIR / "locales"
 DEFAULT_LOCALE = "en"
-SUPPORTED_LOCALES: tuple[str, ...] = (
-    "en",
-    "fa",
-    "fr"
-)
+SUPPORTED_LOCALES: tuple[str, ...] = ("en", "fa", "fr")
 
 babel_configs = BabelConfigs(
     ROOT_DIR=str(I18N_DIR),

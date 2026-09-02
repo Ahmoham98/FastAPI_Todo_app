@@ -26,4 +26,3 @@ def translate(
         return translated_message.format(**kwargs)
 
     return translated_message
-

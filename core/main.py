@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, status, HTTPException, Request
+from fastapi import FastAPI, Depends, status, HTTPException
 from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -18,11 +18,13 @@ from core.core.middleware import setup_middlewares
 
 from core.core.i18n.translator import translate
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
     yield
     print("Application shutdown")
+
 
 tags_metadata = [
     {
@@ -38,9 +40,11 @@ tags_metadata = [
         "description": "Operations about users. Register, login, and profile management.",
     },
 ]
-description = "You can simply clone the project, run fastapi dev and start developing your fastapi app using this template which also is easy to scale as your app goes to scale to" \
-" become bigger as your files and folders grows. this template helps you to focus more on developement rather than taking time on arranging standard template for developing fastapi apps"
-summary ="A clean template for start Developing FastAPI app"
+description = (
+    "You can simply clone the project, run fastapi dev and start developing your fastapi app using this template which also is easy to scale as your app goes to scale to"
+    " become bigger as your files and folders grows. this template helps you to focus more on developement rather than taking time on arranging standard template for developing fastapi apps"
+)
+summary = "A clean template for start Developing FastAPI app"
 
 app = FastAPI(
     title="LMS / Todo API",
@@ -68,14 +72,17 @@ app.include_router(task_router, prefix="/api/v1")
 app.include_router(user_router, prefix="/api/v1")
 # ------------------------------
 
+
 # ---- endpoints ----
 @app.get("/", tags=["root"])
 async def get_root():
     return {"detail": "Welcome to Todo app aplication!"}
 
+
 @app.get("/public", tags=["main"])
 async def test_public_root():
     return {"detail": "You have successfully connected to public route"}
+
 
 @app.get("/private", tags=["main"])
 async def get_authenticated_user(current_user: UserModel = Depends(get_current_user)):
@@ -85,21 +92,30 @@ async def get_authenticated_user(current_user: UserModel = Depends(get_current_u
         "user_is_active": current_user.is_active,
     }
 
+
 @app.get("/private/from-cookie", tags=["main"])
-async def get_authenticated_user_by_cookie(current_user: UserModel = Depends(get_current_user_from_cookie)):
+async def get_authenticated_user_by_cookie(
+    current_user: UserModel = Depends(get_current_user_from_cookie),
+):
     return {
-            "detail": "Your have successfully connected to private route",
-            "user_id": current_user.id,
-            "user_is_active": current_user.is_active,
-        }
+        "detail": "Your have successfully connected to private route",
+        "user_id": current_user.id,
+        "user_is_active": current_user.is_active,
+    }
+
 
 @app.get("/check-role", tags=["main"])
-async def check_user_role(current_user: UserModel = Depends(RoleChecker(allowed_roles=[UserRole.ADMIN, UserRole.USER]))):
+async def check_user_role(
+    current_user: UserModel = Depends(
+        RoleChecker(allowed_roles=[UserRole.ADMIN, UserRole.USER])
+    )
+):
     return {
         "detail": "Your have successfully connected to role-check route",
         "user_id": current_user.id,
         "user_role": current_user.role,
     }
+
 
 @app.get("/test-i18n", tags=["translate"])
 async def translate_response():
@@ -107,13 +123,12 @@ async def translate_response():
         "message": translate("user.not_found"),
     }
 
-@app.post("/seed-data", status_code=status.HTTP_201_CREATED, tags=['seed_data'])
+
+@app.post("/seed-data", status_code=status.HTTP_201_CREATED, tags=["seed_data"])
 async def trigger_seed_data(
-    user_count: int = 5,
-    tasks_per_user: int = 3,
-    db: AsyncSession = Depends(get_db)
+    user_count: int = 5, tasks_per_user: int = 3, db: AsyncSession = Depends(get_db)
 ):
-    """Inserts new data to database for developement 
+    """Inserts new data to database for developement
 
     Args:
         user_count (int, optional): number of users you want it to insert to database. Defaults to 5.
@@ -122,10 +137,11 @@ async def trigger_seed_data(
     if getattr(settings, "ENVIRONMENT", "development") == "production":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Seeding data is not allowed in production environment."
+            detail="Seeding data is not allowed in production environment.",
         )
 
     result = await seed_data(db, user_count=user_count, tasks_per_user=tasks_per_user)
     return result
-# ------------------------------
 
+
+# ------------------------------

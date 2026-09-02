@@ -7,28 +7,25 @@ from core.users.schema import (
     UserRegisterSchema,
     UserLoginSchema,
     TokenResponseSchema,
-    RefreshTokenSchema
+    RefreshTokenSchema,
 )
 
 from core.core.database import get_db
-from core.core.security import (
-    create_access_token,
-    create_refresh_token, 
-    verify_token
-)
+from core.core.security import create_access_token, create_refresh_token, verify_token
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-
 router = APIRouter(prefix="/users", tags=["users"])
+
 
 @router.post("/register", status_code=status.HTTP_201_CREATED)
 async def user_register(
-    request: UserRegisterSchema, 
-    db: AsyncSession = Depends(get_db)
+    request: UserRegisterSchema, db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(UserModel).where(UserModel.email == request.email.lower()))
+    result = await db.execute(
+        select(UserModel).where(UserModel.email == request.email.lower())
+    )
     existing_user = result.scalar_one_or_none()
 
     if existing_user:
@@ -45,12 +42,12 @@ async def user_register(
 
     return {"detail": "User registered successfully"}
 
+
 @router.post("/login", response_model=TokenResponseSchema)
-async def user_login(
-    request: UserLoginSchema, 
-    db: AsyncSession = Depends(get_db)
-):
-    result = await db.execute(select(UserModel).where(UserModel.email == request.email.lower()))
+async def user_login(request: UserLoginSchema, db: AsyncSession = Depends(get_db)):
+    result = await db.execute(
+        select(UserModel).where(UserModel.email == request.email.lower())
+    )
     user = result.scalar_one_or_none()
 
     if user is None or not user.verify_password(request.password):
@@ -66,16 +63,17 @@ async def user_login(
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
 
+
 @router.post("/login-cookie", response_model=TokenResponseSchema)
-async def user_login(
-    request: UserLoginSchema, 
-    response: Response,
-    db: AsyncSession = Depends(get_db)
+async def user_login_with_cookie(
+    request: UserLoginSchema, response: Response, db: AsyncSession = Depends(get_db)
 ):
-    result = await db.execute(select(UserModel).where(UserModel.email == request.email.lower()))
+    result = await db.execute(
+        select(UserModel).where(UserModel.email == request.email.lower())
+    )
     user = result.scalar_one_or_none()
 
     if user is None or not user.verify_password(request.password):
@@ -83,7 +81,7 @@ async def user_login(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
-    
+
     token_data = {"sub": str(user.id)}
     access_token = create_access_token(token_data)
     refresh_token = create_refresh_token(token_data)
@@ -95,31 +93,30 @@ async def user_login(
         value=access_token,
         httponly=True,
         secure=True,
-        samesite="lax"
+        samesite="lax",
     )
     # 2. Refresh token
     response.set_cookie(
-            key="refresh_token",
-            value=refresh_token,
-            httponly=True,
-            secure=True,
-            samesite="lax"
-        )
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="lax",
+    )
 
     return {"detail": "Logged in successfully via cookie"}
 
+
 @router.post("/refresh-token", response_model=TokenResponseSchema)
 async def refresh_token(
-    request: RefreshTokenSchema,
-    db: AsyncSession = Depends(get_db)
+    request: RefreshTokenSchema, db: AsyncSession = Depends(get_db)
 ):
     payload = verify_token(request.refresh_token, expected_type="refresh")
 
     user_id_str = payload.get("sub")
     if not user_id_str:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
         )
 
     # Checking if user still exists
@@ -130,7 +127,7 @@ async def refresh_token(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive"
+            detail="User not found or inactive",
         )
 
     # Token Rotation
@@ -141,19 +138,20 @@ async def refresh_token(
     return {
         "access_token": new_access_token,
         "refresh_token": new_refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }
+
 
 @router.post("/refresh-token-cookie", response_model=TokenResponseSchema)
 async def refresh_token_from_cookie(
     response: Response,
     refresh_token: str = Cookie(None),
-    db: AsyncSession = Depends(get_db)
+    db: AsyncSession = Depends(get_db),
 ):
     if not refresh_token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Refresh token not provided"
+            detail="Refresh token not provided",
         )
 
     payload = verify_token(refresh_token, expected_type="refresh")
@@ -161,8 +159,7 @@ async def refresh_token_from_cookie(
     user_id_str = payload.get("sub")
     if not user_id_str:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token payload"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token payload"
         )
 
     # Checking if user still exists
@@ -172,7 +169,7 @@ async def refresh_token_from_cookie(
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="User not found or inactive"
+            detail="User not found or inactive",
         )
 
     # Token Rotation
@@ -186,24 +183,27 @@ async def refresh_token_from_cookie(
         value=new_access_token,
         httponly=True,
         secure=True,
-        samesite="lax"
+        samesite="lax",
     )
     response.set_cookie(
         key="refresh_token",
         value=new_refresh_token,
         httponly=True,
         secure=True,
-        samesite="lax"
+        samesite="lax",
     )
 
     return {"detail": "Tokens refreshed successfully via cookie"}
+
 
 @router.post("/login-Authorize-button", response_model=TokenResponseSchema)
 async def user_login_authorize_button(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db),
 ):
-    result = await db.execute(select(UserModel).where(UserModel.email == form_data.username.lower()))
+    result = await db.execute(
+        select(UserModel).where(UserModel.email == form_data.username.lower())
+    )
     user = result.scalar_one_or_none()
 
     if user is None or not user.verify_password(form_data.password):
@@ -211,7 +211,7 @@ async def user_login_authorize_button(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid username or password",
         )
-    
+
     token_data = {"sub": str(user.id)}
     access_token = create_access_token(token_data)
     refresh_token = create_refresh_token(token_data)
@@ -219,5 +219,5 @@ async def user_login_authorize_button(
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
-        "token_type": "bearer"
+        "token_type": "bearer",
     }

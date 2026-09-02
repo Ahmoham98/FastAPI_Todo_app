@@ -10,9 +10,11 @@ from core.core.database import Base
 # Creates an object for hashing password
 password_hash = PasswordHash.recommended()
 
+
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
     USER = "user"
+
 
 class UserModel(Base):
     __tablename__ = "users"
@@ -26,7 +28,9 @@ class UserModel(Base):
     role = Column(SQLEnum(UserRole), default=UserRole.USER, nullable=False)
 
     created_date = Column(DateTime, server_default=func.now())
-    updated_date = Column(DateTime, server_default=func.now(), server_onupdate=func.now())
+    updated_date = Column(
+        DateTime, server_default=func.now(), server_onupdate=func.now()
+    )
 
     tasks = relationship("TaskModel", back_populates="user")
 

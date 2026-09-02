@@ -1,6 +1,4 @@
 import random
-from fastapi import Depends
-from core.core.database import get_db
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,11 +7,8 @@ from core.tasks.models import TaskModel
 
 fake = Faker()
 
-async def seed_data(
-    db: AsyncSession, 
-    user_count: int = 5, 
-    tasks_per_user: int = 3
-):
+
+async def seed_data(db: AsyncSession, user_count: int = 5, tasks_per_user: int = 3):
     """Generate random tasks and users using Faker
 
     Args:
@@ -26,9 +21,9 @@ async def seed_data(
     # 1.Creates new user
     for _ in range(user_count):
         user_obj = UserModel(
-            email=fake.unique.email(), 
-            role = random.choice([UserRole.USER, UserRole.ADMIN]), 
-            is_active=True
+            email=fake.unique.email(),
+            role=random.choice([UserRole.USER, UserRole.ADMIN]),
+            is_active=True,
         )
         user_obj.hash_password("123456789")
 
@@ -43,7 +38,7 @@ async def seed_data(
                 title=fake.sentence(nb_words=4),
                 description=fake.text(max_nb_chars=100),
                 is_done=random.choice([True, False]),
-                user_id=user_obj.id
+                user_id=user_obj.id,
             )
             db.add(db_task)
 

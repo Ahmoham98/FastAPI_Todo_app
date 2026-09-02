@@ -3,15 +3,19 @@ from fastapi import FastAPI, Request
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware    # Custom Translation Middleware
+from fastapi.middleware.trustedhost import (
+    TrustedHostMiddleware,
+)  # Custom Translation Middleware
 
 from fastapi_babel import BabelMiddleware
 from core.core.i18n.babel_config import babel_configs
-# if you want to use HTTPSRedirectMiddleware 
+
+# if you want to use HTTPSRedirectMiddleware
 # from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
+
 def setup_middlewares(app: FastAPI) -> None:
-    """setting all application middlewares 
+    """setting all application middlewares
 
     Args:
         app (FastAPI): Your application object
@@ -25,16 +29,16 @@ def setup_middlewares(app: FastAPI) -> None:
 
     # 2.Trusted hosts settings
     app.add_middleware(
-        TrustedHostMiddleware, 
-        allowed_hosts=["localhost", "127.0.0.1", "*.example.com"] # set your allowed hosts here
+        TrustedHostMiddleware,
+        allowed_hosts=[
+            "localhost",
+            "127.0.0.1",
+            "*.example.com",
+        ],  # set your allowed hosts here
     )
 
     # 3.Responses conmpression
-    app.add_middleware(
-        GZipMiddleware, 
-        minimum_size=1000, 
-        compresslevel=5
-    )
+    app.add_middleware(GZipMiddleware, minimum_size=1000, compresslevel=5)
 
     # 4.CORS settings
     origins = [
