@@ -216,3 +216,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Babel compiled translation files
+*.mo
+
+# Babel extraction template
+messages.pot

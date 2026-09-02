@@ -3,8 +3,10 @@ from fastapi import FastAPI, Request
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
-from core.middleware.i18n import I18NMiddleware     # Custom Translation Middleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware    # Custom Translation Middleware
+
+from fastapi_babel import BabelMiddleware
+from core.core.i18n.babel_config import babel_configs
 # if you want to use HTTPSRedirectMiddleware 
 # from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
@@ -15,11 +17,10 @@ def setup_middlewares(app: FastAPI) -> None:
         app (FastAPI): Your application object
     """
 
-    # 1.I18N Middleware
+    # 1.I18n Middleware
     app.add_middleware(
-        I18NMiddleware,
-        locales_path="core/core/i18n/locales",
-        default_locale="en"
+        BabelMiddleware,
+        babel_configs=babel_configs,
     )
 
     # 2.Trusted hosts settings

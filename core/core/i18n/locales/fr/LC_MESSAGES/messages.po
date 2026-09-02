@@ -1,0 +1,24 @@
+# French translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR electricallover45@gmail.com, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.0.1\n"
+"Report-Msgid-Bugs-To: electricallover45@gmail.com\n"
+"POT-Creation-Date: 2026-09-02 12:15+0330\n"
+"PO-Revision-Date: 2026-09-02 12:38+0330\n"
+"Last-Translator: Ahmad Mohammadzadeh <electricallover45@gmail.com>\n"
+"Language: fr\n"
+"Language-Team: fr <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: core/main.py:107
+msgid "user.not_found"
+msgstr "L’utilisateur recherché est introuvable."
+

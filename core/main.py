@@ -16,6 +16,8 @@ from core.core.database import get_db
 from core.core.seeder import seed_data
 from core.core.middleware import setup_middlewares
 
+from core.core.i18n.translator import translate
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("Application startup")
@@ -99,11 +101,11 @@ async def check_user_role(current_user: UserModel = Depends(RoleChecker(allowed_
         "user_role": current_user.role,
     }
 
-@app.get("/translate", tags=["translate"])
-async def translate_response(request: Request):
-    # 1.Exrtact translation function
-    _ = request.state._
-    return {"message": _("Welcome to our platform.")}
+@app.get("/test-i18n", tags=["translate"])
+async def translate_response():
+    return {
+        "message": translate("user.not_found"),
+    }
 
 @app.post("/seed-data", status_code=status.HTTP_201_CREATED, tags=['seed_data'])
 async def trigger_seed_data(

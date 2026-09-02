@@ -17,11 +17,17 @@
 - then navigate to core/core/dependencies.py where RoleChecker exists and adjust the checking logic if any more consideration needed
 - finally you can use role checker cleanly as dependency in your routes same as "/api/v1/users/check-role" route we already implemented... (allowed roles argument tells the checker which roles can have access to this routes...)
 
+## multilanguage translation (I18N)
+### en, fa and fr translation are active on /test-i18n
+- translation for these three language (e.g en, fa, fr) are implemented
+- you can adjust and add messages you want to translation messages using "translate" funciton to include them in your po files...
+
 ## Middlewares
-- HTTPSRedirectMiddleware
+- BabelMiddleware
 - TrustedHostMiddleware
 - GZipMiddleware (for compressing long responses)
 - CORSMiddleware
+- HTTPSRedirectMiddleware
 
 # How to run the Application
 ## Run the whole Application with docker-compose 🐳
@@ -97,11 +103,11 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 - SQLAlchemy ORM for code first database connection
 - Alembic for Database migration management
 - asyncpg configuration for async conncetion to default database (e.g PostgrSQL)
+- gettext
 - pydantic-settings for single source of configuration in the whole project
 - Dependnecy Injection database connection for
 - pwdlib for password hashing using 
 - PyJWT
-- gettext
 ## Endpoints
 - GET /api/v1/todo/tasks
     returns all found tasks from database + Pagination
