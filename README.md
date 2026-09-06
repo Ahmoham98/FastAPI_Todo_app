@@ -108,6 +108,10 @@ for changing database connection, you can change the SQLALCHEMY_DATABASE_URL val
 - Dependnecy Injection database connection for
 - pwdlib for password hashing using 
 - PyJWT
+- Flack8
+- Black
+- Isort
+
 ## Endpoints
 - GET /api/v1/todo/tasks
     returns all found tasks from database + Pagination
